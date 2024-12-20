@@ -2,16 +2,14 @@ import { supabase } from '../database/supabaseClient';
 
 export const uploadFile = async (req: any, res: any) => {
     try {
-        // Access the buffer and file metadata
         const fileBuffer = req.file.buffer;
         const fileName = `${Date.now()}-${req.file.originalname}`;
 
-        // Upload the file buffer to Supabase storage
         const { data, error } = await supabase.storage
             .from('uploads')
             .upload(`files/${fileName}`, fileBuffer, {
-                contentType: req.file.mimetype, // Set the correct MIME type
-                upsert: true, // Overwrite if file already exists
+                contentType: req.file.mimetype,
+                upsert: true,
             });
 
         if (error) {
@@ -33,5 +31,55 @@ export const listFiles = async (req: any, res: any) => {
         return res.status(500).send('Error fetching files');
     }
 
-    res.render('files', { files: data });
+    const files = data.map(file => {
+        const publicUrl = supabase.storage
+            .from('uploads')
+            .getPublicUrl(`files/${file.name}`);
+
+        return { ...file, download_url: publicUrl };
+    });
+
+    res.render('files', { files });
+};
+
+export const fileDetails = async (req: any, res: any) => {
+    const { filename } = req.params;
+
+    const { data, error } = await supabase.storage
+        .from('uploads')
+        .list('files', { search: filename });
+
+    if (error || !data.length) {
+        return res.status(404).send('File not found');
+    }
+
+    const file = data.find(f => f.name === filename);
+    if (!file) {
+        return res.status(404).send('File not found');
+    }
+
+    const publicUrl = 'https://vqhwuywtjlcjmkpjwuhm.supabase.co/storage/v1/object/public/uploads/files/';
+
+    res.render('fileDetails', { file: { ...file, download_url: publicUrl } });
+};
+
+export const fileDetailsRoute = async (req: any, res: any) => {
+    const { filename } = req.params;
+
+    const { data, error } = await supabase.storage
+        .from('uploads')
+        .list('files', { search: filename });
+
+    if (error || !data.length) {
+        return res.status(404).send('File not found');
+    }
+
+    const file = data.find(item => item.name === filename);
+    if (!file) {
+        return res.status(404).send('File not found');
+    }
+
+    const publicUrl = 'https://vqhwuywtjlcjmkpjwuhm.supabase.co/storage/v1/object/public/uploads/files/';
+
+    res.render('fileDetails', { file: { ...file, download_url: publicUrl } });
 };
