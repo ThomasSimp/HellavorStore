@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
 import { upload } from './middleware/upload';
-import { uploadFile, listFiles } from './controllers/fileController';
+import { uploadFile, listFiles, fileDetailsRoute } from './controllers/fileController';
 
 dotenv.config();
 const app = express();
@@ -15,5 +15,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => res.render('upload'));
 app.post('/upload', upload.single('file'), uploadFile);
 app.get('/files', listFiles);
+app.get('/files/:filename', fileDetailsRoute)
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
