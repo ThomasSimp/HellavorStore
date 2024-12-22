@@ -3,7 +3,7 @@ import { supabase } from '../database/supabaseClient';
 export const uploadFile = async (req: any, res: any) => {
     try {
         const fileBuffer = req.file.buffer;
-        const fileName = `${Date.now()}-${req.file.originalname}`;
+        const fileName = req.file.originalname;
 
         const { data, error } = await supabase.storage
             .from('uploads')
