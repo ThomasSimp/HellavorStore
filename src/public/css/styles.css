@@ -1,5 +1,17 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1; /* Ensures the content takes up the remaining space */
+}
+
+footer {
+    margin-top: auto; /* Pushes the footer to the bottom */
 }
