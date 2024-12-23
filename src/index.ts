@@ -77,5 +77,9 @@ app.get('/logout', (req, res) => {
     });
 });
 
+app.use((req, res) => {
+    res.status(404).render('404', { message: 'Sorry, the page you are looking for does not exist.' });
+});
+
 // Start server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
