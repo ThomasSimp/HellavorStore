@@ -24,6 +24,27 @@ export const uploadFile = async (req: any, res: any) => {
     }
 };
 
+export const deleteFile = async (req: any, res: any) => {
+    try {
+        const { filename } = req.params;
+
+        // Perform deletion
+        const { error } = await supabase.storage
+            .from('uploads')
+            .remove([`files/${filename}`]);
+
+        if (error) {
+            console.error('Error deleting file from Supabase:', error);
+            return res.status(500).send('Error deleting file from Supabase');
+        }
+
+        res.send('File deleted successfully');
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        res.status(500).send('Unexpected error occurred while deleting file');
+    }
+};
+
 export const listFiles = async (req: any, res: any) => {
     const { data, error } = await supabase.storage.from('uploads').list('files');
 

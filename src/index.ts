@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import { upload } from './middleware/upload';
-import { uploadFile, listFiles, fileDetailsRoute } from './controllers/fileController';
+import { uploadFile, listFiles, fileDetailsRoute, deleteFile } from './controllers/fileController';
 
 dotenv.config();
 const app = express();
@@ -48,16 +48,21 @@ function isAuthenticated(req: any, res: any, next: any) {
     if (req.session.isAdmin) {
         next();
     } else {
-        res.redirect('/'); // Redirect to login if not authenticated
+        const nextUrl = req.originalUrl;
+        res.redirect(`/?next=${encodeURIComponent(nextUrl)}`);
     }
 }
 
 // Login route
-app.get('/', (req, res) => res.render('login'));
+app.get('/', (req, res) => {
+    const nextUrl = typeof req.query.next === 'string' ? req.query.next : '';
+    res.render('login', { next: nextUrl });
+});
 
 // Login post route
 app.post('/', adminValidation, (req, res) => {
-    res.redirect('/upload'); // Redirect to upload page after login
+    const nextUrl = req.body.next || '/upload';
+    res.redirect(nextUrl);
 });
 
 // Protected route for upload page
@@ -69,6 +74,7 @@ app.get('/upload', isAuthenticated, (req, res) => {
 app.post('/uploadFile', isAuthenticated, upload.single('file'), uploadFile);
 app.get('/files', isAuthenticated, listFiles);
 app.get('/files/:filename', isAuthenticated, fileDetailsRoute);
+app.delete('/files/:filename', isAuthenticated, deleteFile);
 
 // Logout route
 app.get('/logout', (req, res) => {
