@@ -15,8 +15,34 @@
             <p><strong>Last Modified:</strong> <%= file.updated_at %></p>
             <div class="d-flex justify-content-center mt-4">
                 <a href="<%= file.download_url + file.name %>" class="btn btn-primary me-2" target="_blank">Download</a>
-                <a href="/files" class="btn btn-secondary">Back to Files</a>
+                <a href="/files" class="btn btn-secondary me-2">Back to Files</a>
+                <button class="btn btn-danger" id="delete-button" data-filename="<%= file.name %>">Delete</button>
             </div>
+            
+            <script>
+                document.getElementById('delete-button').addEventListener('click', async function () {
+                    const filename = this.getAttribute('data-filename');
+            
+                    const confirmed = confirm(`Are you sure you want to delete the file: ${filename}?`);
+                    if (!confirmed) return;
+            
+                    try {
+                        const response = await fetch(`/files/${filename}`, {
+                            method: 'DELETE',
+                        });
+            
+                        if (response.ok) {
+                            alert('File deleted successfully!');
+                            window.location.href = '/files'; // Redirect to file listing
+                        } else {
+                            const errorText = await response.text();
+                            alert(`Error: ${errorText}`);
+                        }
+                    } catch (err) {
+                        alert(`Unexpected error: ${err.message}`);
+                    }
+                });
+            </script>            
         </div>
     </div>
 
