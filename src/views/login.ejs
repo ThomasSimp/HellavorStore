@@ -11,6 +11,7 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Admin Login</h1>
         <form action="/" method="POST" class="p-4 border rounded shadow-sm bg-white">
+            <input type="hidden" name="next" value="<%= next || '' %>" />
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>

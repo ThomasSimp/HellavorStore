@@ -48,16 +48,21 @@ function isAuthenticated(req: any, res: any, next: any) {
     if (req.session.isAdmin) {
         next();
     } else {
-        res.redirect('/'); // Redirect to login if not authenticated
+        const nextUrl = req.originalUrl;
+        res.redirect(`/?next=${encodeURIComponent(nextUrl)}`);
     }
 }
 
 // Login route
-app.get('/', (req, res) => res.render('login'));
+app.get('/', (req, res) => {
+    const nextUrl = typeof req.query.next === 'string' ? req.query.next : '';
+    res.render('login', { next: nextUrl });
+});
 
 // Login post route
 app.post('/', adminValidation, (req, res) => {
-    res.redirect('/upload'); // Redirect to upload page after login
+    const nextUrl = req.body.next || '/upload';
+    res.redirect(nextUrl);
 });
 
 // Protected route for upload page
