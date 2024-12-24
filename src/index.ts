@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import { upload } from './middleware/upload';
-import { uploadFile, listFiles, fileDetailsRoute } from './controllers/fileController';
+import { uploadFile, listFiles, fileDetailsRoute, deleteFile } from './controllers/fileController';
 
 dotenv.config();
 const app = express();
@@ -69,6 +69,7 @@ app.get('/upload', isAuthenticated, (req, res) => {
 app.post('/uploadFile', isAuthenticated, upload.single('file'), uploadFile);
 app.get('/files', isAuthenticated, listFiles);
 app.get('/files/:filename', isAuthenticated, fileDetailsRoute);
+app.delete('/files/:filename', isAuthenticated, deleteFile);
 
 // Logout route
 app.get('/logout', (req, res) => {
