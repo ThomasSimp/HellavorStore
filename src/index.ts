@@ -39,7 +39,7 @@ function adminValidation(req: any, res: any, next: any) {
         req.session.isAdmin = true; // Mark user as authenticated
         next();
     } else {
-        res.status(403).send('Access denied. Invalid credentials.');
+        res.redirect('/access-denied');
     }
 }
 
@@ -81,6 +81,11 @@ app.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/'); // Redirect to login after logout
     });
+});
+
+// Access Denied route
+app.get('/access-denied', (req, res) => {
+    res.render('access-denied', { message: 'Invalid credentials. Please try again.' });
 });
 
 app.use((req, res) => {
