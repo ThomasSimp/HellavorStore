@@ -19,28 +19,26 @@
                 <button class="btn btn-danger" id="delete-button" data-filename="<%= file.name %>">Delete</button>
             </div>
             
+            <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
             <script>
-                document.getElementById('delete-button').addEventListener('click', async function () {
-                    const filename = this.getAttribute('data-filename');
+                $(document).ready(function () {
+                    $('#delete-button').click(function () {
+                        const filename = $(this).data('filename');
             
-                    const confirmed = confirm(`Are you sure you want to delete the file: ${filename}?`);
-                    if (!confirmed) return;
-            
-                    try {
-                        const response = await fetch(`/files/${filename}`, {
-                            method: 'DELETE',
-                        });
-            
-                        if (response.ok) {
-                            alert('File deleted successfully!');
-                            window.location.href = '/files'; // Redirect to file listing
-                        } else {
-                            const errorText = await response.text();
-                            alert(`Error: ${errorText}`);
+                        if (confirm(`Are you sure you want to delete the file: ${filename}?`)) {
+                            $.ajax({
+                                url: `/files/${filename}`,
+                                method: 'DELETE',
+                                success: function () {
+                                    alert('File deleted successfully!');
+                                    window.location.href = '/files'; // Redirect to file listing
+                                },
+                                error: function (xhr) {
+                                    alert(`Error: ${xhr.responseText || 'An error occurred'}`);
+                                }
+                            });
                         }
-                    } catch (err) {
-                        alert(`Unexpected error: ${err.message}`);
-                    }
+                    });
                 });
             </script>            
         </div>
