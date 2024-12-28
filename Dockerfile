@@ -10,8 +10,6 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-COPY .env .env
-
 # Copy the rest of the application code
 COPY . .
 
@@ -27,9 +25,6 @@ WORKDIR /usr/src/app
 # Copy only the built files and necessary dependencies
 COPY package*.json ./
 RUN npm install --production
-
-# Copy the .env file again in the runtime stage
-COPY .env .env
 
 COPY --from=build /usr/src/app/dist ./dist
 
